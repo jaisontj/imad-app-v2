@@ -163,6 +163,7 @@ app.get('/get-articles', function (req, res) {
       if (err) {
           res.status(500).send(err.toString());
       } else {
+          res.setHeader('Content-Type', 'application/json');
           res.send(JSON.stringify(result.rows));
       }
    });
