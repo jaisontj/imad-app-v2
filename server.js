@@ -105,12 +105,15 @@ app.post('/login', function (req, res) {
    var username = req.body.username;
    var password = req.body.password;
    
+   var response = {
+       "error":"Username/Password is invalid"
+   }
   pool.query('SELECT * FROM "users" WHERE username = $1', [username], function (err, result) {
       if (err) {
           res.status(500).send(err.toString());
       } else {
           if (result.rows.length === 0) {
-              res.status(403).send('username/password is invalid');
+              res.status(403).send(response);
           } else {
               // Match the password
               var dbString = result.rows[0].password;
@@ -127,7 +130,7 @@ app.post('/login', function (req, res) {
                 res.send('credentials correct!');
                 
               } else {
-                res.status(403).send('username/password is invalid');
+                res.status(403).send(response);
               }
           }
       }
