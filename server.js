@@ -12,7 +12,7 @@ var config = {
     host: 'db.imad.hasura-app.io',
     port: '5432',
     password: 'db-jaisontj-19664'
-}
+};
 
 var app = express();
 app.use(morgan('combined'));
@@ -202,7 +202,7 @@ app.post('/submit-comment/:articleName', function (req, res) {
                             if (err) {
                                 res.status(500).send(err.toString());
                             } else {
-                                res.status(200).send('Comment inserted!')
+                                res.status(200).send('Comment inserted!');
                             }
                         });
                 }
