@@ -105,21 +105,12 @@ app.post('/login', function (req, res) {
    var username = req.body.username;
    var password = req.body.password;
    
-   var errorResponse = {
-       "error":"Username/Password is invalid"
-   };
-   
-   var successResponse = {
-       "message":"Successfully Logged in!"
-   };
-   
-   res.setHeader('Content-Type', 'application/json');
-  pool.query('SELECT * FROM "users" WHERE username = $1', [username], function (err, result) {
+   pool.query('SELECT * FROM "users" WHERE username = $1', [username], function (err, result) {
       if (err) {
           res.status(500).send(err.toString());
       } else {
           if (result.rows.length === 0) {
-              res.status(403).send(errorResponse);
+              res.status(403).send('username/password is invalid');
           } else {
               // Match the password
               var dbString = result.rows[0].password;
@@ -133,14 +124,14 @@ app.post('/login', function (req, res) {
                 // internally, on the server side, it maps the session id to an object
                 // { auth: {userId }}
                 
-                res.send(successResponse);
+                res.send('credentials correct!');
                 
               } else {
-                res.status(403).send(errorResponse);
+                res.status(403).send('username/password is invalid');
               }
           }
       }
-  });
+   });
 });
 
 app.get('/check-login', function (req, res) {
@@ -168,7 +159,6 @@ var pool = new Pool(config);
 app.get('/get-articles', function (req, res) {
    // make a select request
    // return a response with the results
-      res.setHeader('Content-Type', 'application/json');
    pool.query('SELECT * FROM article ORDER BY date DESC', function (err, result) {
       if (err) {
           res.status(500).send(err.toString());
@@ -181,7 +171,7 @@ app.get('/get-articles', function (req, res) {
 app.get('/get-comments/:articleName', function (req, res) {
    // make a select request
    // return a response with the results
-   pool.query('SELECT comment.*, "user".username FROM article, comment, "user" WHERE article.title = $1 AND article.id = comment.article_id AND comment.user_id = "user".id ORDER BY comment.timestamp DESC', [req.params.articleName], function (err, result) {
+   pool.query('SELECT comment.*, "users".username FROM article, comment, "user" WHERE article.title = $1 AND article.id = comment.article_id AND comment.user_id = "user".id ORDER BY comment.timestamp DESC', [req.params.articleName], function (err, result) {
       if (err) {
           res.status(500).send(err.toString());
       } else {
