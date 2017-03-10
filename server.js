@@ -104,18 +104,13 @@ app.post('/create-user', function (req, res) {
 app.post('/login', function (req, res) {
    var username = req.body.username;
    var password = req.body.password;
-   
-   var response;
-   
    res.setHeader('Content-Type', 'application/json');
    pool.query('SELECT * FROM "users" WHERE username = $1', [username], function (err, result) {
       if (err) {
-          response.error = err.toString();
-          res.status(500).send(JSON.stringify(response));
+          res.status(500).send(err.toString());
       } else {
           if (result.rows.length === 0) {
-              response.error = "Username/Password is incorrect";
-              res.status(403).send(JSON.stringify(response));
+              res.status(403).send(JSON.stringify({"error":"Username/Password is incorrect"}));
           } else {
               // Match the password
               var dbString = result.rows[0].password;
@@ -129,12 +124,10 @@ app.post('/login', function (req, res) {
                 // internally, on the server side, it maps the session id to an object
                 // { auth: {userId }}
                 
-                response.message = "You have logged in successfully";
-                res.send(JSON.stringify(response));
+                res.send(JSON.stringify({"message":"You have logged in successfully"}));
                 
               } else {
-                response.error = "Username/Password is incorrect";
-                res.status(403).send(JSON.stringify(response));              }
+                res.status(403).send(JSON.stringify({"error":"Username/Password is incorrect"}));              }
           }
       }
    });
