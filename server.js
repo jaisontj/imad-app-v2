@@ -107,7 +107,10 @@ app.post('/login', function (req, res) {
    
    var response = {
        "error":"Username/Password is invalid"
-   }
+   };
+   
+   res.setHeader('Content-Type', 'application/json');
+//   res.send(JSON.stringify({ a: 1 }));
   pool.query('SELECT * FROM "users" WHERE username = $1', [username], function (err, result) {
       if (err) {
           res.status(500).send(err.toString());
