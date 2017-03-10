@@ -105,41 +105,39 @@ app.post('/login', function (req, res) {
    var username = req.body.username;
    var password = req.body.password;
    
-   res.send("Login");
-   
-//   pool.query('SELECT * FROM "users" WHERE username = $1', [username], function (err, result) {
-//       if (err) {
-//           res.status(500).send(err.toString());
-//       } else {
-//           if (result.rows.length === 0) {
-//               res.status(403).send('username/password is invalid');
-//           } else {
-//               // Match the password
-//               var dbString = result.rows[0].password;
-//               var salt = dbString.split('$')[2];
-//               var hashedPassword = hash(password, salt); // Creating a hash based on the password submitted and the original salt
-//               if (hashedPassword === dbString) {
+  pool.query('SELECT * FROM "users" WHERE username = $1', [username], function (err, result) {
+      if (err) {
+          res.status(500).send(err.toString());
+      } else {
+          if (result.rows.length === 0) {
+              res.status(403).send('username/password is invalid');
+          } else {
+              // Match the password
+              var dbString = result.rows[0].password;
+              var salt = dbString.split('$')[2];
+              var hashedPassword = hash(password, salt); // Creating a hash based on the password submitted and the original salt
+              if (hashedPassword === dbString) {
                 
-//                 // Set the session
-//                 req.session.auth = {userId: result.rows[0].id};
-//                 // set cookie with a session id
-//                 // internally, on the server side, it maps the session id to an object
-//                 // { auth: {userId }}
+                // Set the session
+                req.session.auth = {userId: result.rows[0].id};
+                // set cookie with a session id
+                // internally, on the server side, it maps the session id to an object
+                // { auth: {userId }}
                 
-//                 res.send('credentials correct!');
+                res.send('credentials correct!');
                 
-//               } else {
-//                 res.status(403).send('username/password is invalid');
-//               }
-//           }
-//       }
-//   });
+              } else {
+                res.status(403).send('username/password is invalid');
+              }
+          }
+      }
+  });
 });
 
 app.get('/check-login', function (req, res) {
    if (req.session && req.session.auth && req.session.auth.userId) {
        // Load the user object
-       pool.query('SELECT * FROM "user" WHERE id = $1', [req.session.auth.userId], function (err, result) {
+       pool.query('SELECT * FROM "users" WHERE id = $1', [req.session.auth.userId], function (err, result) {
            if (err) {
               res.status(500).send(err.toString());
            } else {
