@@ -92,12 +92,12 @@ app.post('/create-user', function (req, res) {
    var password = req.body.password;
    var salt = crypto.randomBytes(128).toString('hex');
    var dbString = hash(password, salt);
+   res.setHeader('Content-Type', 'application/json');
    pool.query('INSERT INTO "users" (username, password) VALUES ($1, $2)', [username, dbString], function (err, result) {
       if (err) {
           res.status(500).send(JSON.stringify({"error":err.toString()}));
       } else {
           var message = 'User successfully created: ' + username;
-          res.setHeader('Content-Type', 'application/json');
           res.send(JSON.stringify({"message":message}));
       }
    });
