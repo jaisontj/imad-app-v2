@@ -136,9 +136,9 @@ app.post('/login', function (req, res) {
 });
 
 app.get('/check-login', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
    if (req.session && req.session.auth && req.session.auth.userId) {
        // Load the user object
-       res.setHeader('Content-Type', 'application/json');
        pool.query('SELECT * FROM "users" WHERE id = $1', [req.session.auth.userId], function (err, result) {
            if (err) {
               res.status(500).send(JSON.stringify({"error":err.toString()}));
